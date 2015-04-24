@@ -10,8 +10,8 @@ var _ = require('lodash');
 
 var questions = {
 
-	create: function (req, res) {
-		if ( req.body.question) {
+  create: function (req, res) {
+    if ( req.body.question) {
       var data = req.body.question;
       var options = req.body.question.options;
       var question = new Question({
@@ -43,7 +43,7 @@ var questions = {
       res.status(400);
       res.end('Bad request');
     }
-	},
+  },
 
   getByPollId: function(id, req, res) {
     if ( id ) {
@@ -64,7 +64,7 @@ var questions = {
     }
   },
 
-	adminGetById: function (id, req, res) {
+  adminGetById: function (id, req, res) {
     if(req.body){
       var data = req.body;
       var question = new Question({id: id})
@@ -90,9 +90,9 @@ var questions = {
       res.status(400);
       res.end('Bad request');
     }
-	},
+  },
 
-	updateById: function (id, req, res) {
+  updateById: function (id, req, res) {
     var data = req.body;
     var question = new Question({id: id});
     question.fetch()
@@ -117,7 +117,7 @@ var questions = {
           res.end('Question object not found');
         }
       });
-	}
+  }
 };
 
 module.exports = questions;

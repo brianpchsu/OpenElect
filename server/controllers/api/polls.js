@@ -10,8 +10,8 @@ var _ = require('lodash');
 
 var polls = {
 
-	create: function (req, res) {
-		if ( req.body ) {
+  create: function (req, res) {
+    if ( req.body ) {
       var data = req.body.poll;
       var poll = new Poll({
         id: uuid.v4(),
@@ -38,9 +38,9 @@ var polls = {
       res.status(400);
       res.end('Bad request');
     }
-	},
+  },
 
-	adminGetById: function (id, req, res) {
+  adminGetById: function (id, req, res) {
     if( req.body){
       var data = req.body;
       var poll = new Poll({id: id})
@@ -64,9 +64,9 @@ var polls = {
       res.status(400);
       res.end('Bad request');
     }
-	},
+  },
 
-	updateById: function (id, req, res) {
+  updateById: function (id, req, res) {
     var data = req.body;
     var poll = new Poll({id: id});
     poll.fetch({withRelated: ['election']})

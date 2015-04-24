@@ -64,6 +64,7 @@ var SignUpForm = React.createClass({
   },
 
   handleSubmit: function (data) {
+    console.log("submit signup", data);
     axios.post('/api/v1/users/signup',{
       user: data
     }).then(function(){
