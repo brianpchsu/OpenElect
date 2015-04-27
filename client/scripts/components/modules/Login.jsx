@@ -65,10 +65,13 @@ var LoginForm = React.createClass({
 
   handleSubmit: function (data) {
     var next = this.context.router.getCurrentQuery().next || 'dashboard';
+    var self = this;
     axios.post('/api/v1/users/login', data)
       .then(function(){
-        this.closeModal;
-        this.context.router.transitionTo(next);
+          setTimeout(function(){
+            self.closeModal;
+            self.context.router.transitionTo(next);
+          }, 500);
       }.bind(this))
       .catch(function(response){
         this.setState({
