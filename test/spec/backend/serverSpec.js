@@ -45,6 +45,87 @@ describe('Test server, database, and route setup', function(){
   });
 
   describe('Database table checking', function(){
+    // Delete test data from tables after testing
+    after(function(done){
+      User.forge({email: "000@test.com"})
+      .fetch()
+      .then(function(user, error) {
+        if (error) {
+          console.log(error);
+        }
+        console.log("about to destroy", user.toJSON());
+        user.destroy();
+        done();
+      });
+
+      Group.forge({name: "Hack_Reactor"})
+      .fetch()
+      .then(function(group, error) {
+        if (error) {
+          console.log(error);
+        }
+        console.log("about to destroy", group.toJSON());
+        group.destroy();
+        // done();
+      }).end(done);
+
+      Election.forge({name: "2015_Election"})
+      .fetch()
+      .then(function(election, error) {
+        if (error) {
+          console.log(error);
+        }
+        console.log("about to destroy", election.toJSON());
+        election.destroy();
+        // done();
+      }).end(done);
+
+      Poll.forge({name: "8th_floor"})
+      .fetch()
+      .then(function(poll, error) {
+        if (error) {
+          console.log(error);
+        }
+        console.log("about to destroy", poll.toJSON());
+        poll.destroy();
+        // done();
+      }).end(done);
+
+      Question.forge({name: "Funnest guy in Hack Reactor?"})
+      .fetch()
+      .then(function(question, error) {
+        if (error) {
+          console.log(error);
+        }
+        console.log("about to destroy", question.toJSON());
+        question.destroy();
+        // done();
+      }).end(done);
+
+      Ballot.forge({choices:  '{ "selections": [ { "question_id": 2, "selection": null }] }'})
+      .fetch()
+      .then(function(ballot, error) {
+        if (error) {
+          console.log(error);
+        }
+        console.log("about to destroy", ballot.toJSON());
+        ballot.destroy();
+        done();
+      });
+
+      Question.forge({choices:  '{ "selections": [ { "question_id": 2, "selection": null }] }'})
+      .fetch()
+      .then(function(question, error) {
+        if (error) {
+          console.log(error);
+        }
+        console.log("about to destroy", question.toJSON());
+        question.destroy();
+        done();
+      });
+    });
+
+
     it('should create a new user', function(done){
       new User({
       id: uuid.v4(),
@@ -67,14 +148,14 @@ describe('Test server, database, and route setup', function(){
     it('should create a new group', function(done){
       new Group({
       id: uuid.v4(),
-      name: "Hack_Reactor10",
+      name: "Hack_Reactor",
       }).save({},{method: 'insert'}).then(function(group, error){
         if (error) {
           console.log(error);
         }
         groupId = group.id;
         console.log("Group created with id: ", groupId);
-        expect(group.toJSON()["name"]).to.equal("Hack_Reactor10");
+        expect(group.toJSON()["name"]).to.equal("Hack_Reactor");
         done();
       });
     });
@@ -98,14 +179,14 @@ describe('Test server, database, and route setup', function(){
     it('should create a new poll', function(done){
       new Poll({
       id: uuid.v4(),
-      name: "8th floor",
+      name: "8th_floor",
       }).save({},{method: 'insert'}).then(function(poll, error){
         if (error) {
           console.log(error);
         }
         pollId = poll.id;
         console.log("Poll created with ID: ", pollId);
-        expect(poll.toJSON()["name"]).to.equal("8th floor");
+        expect(poll.toJSON()["name"]).to.equal("8th_floor");
         done();
       });
     });
@@ -128,23 +209,47 @@ describe('Test server, database, and route setup', function(){
     it('should create a new question', function(done){
       new Question({
       id: uuid.v4(),
-      name: "Funnest guy in Hack Reactor?",
+      name: "Best team in 8th floor?",
       }).save({},{method: 'insert'}).then(function(question, error){
         if (error) {
           console.log(error);
         }
         questionId = question.id;
         console.log("Question created with ID: ", questionId);
-        expect(question.toJSON()["name"]).to.equal("Funnest guy in Hack Reactor?");
+        expect(question.toJSON()["name"]).to.equal("Best team in 8th floor?");
         done();
       });
     });
 
   });
 
-  describe('Test all the routes', function(){
+  describe('Test the routes', function(){
+    after(function(done){
+      User.forge({email: "001@test.com"})
+      .fetch()
+      .then(function(user, error) {
+        if (error) {
+          console.log(error);
+        }
+        console.log("about to destroy", user.toJSON());
+        user.destroy();
+        done();
+      });
+
+      Election.forge({name: "2nd_test"})
+      .fetch()
+      .then(function(election, error) {
+        if (error) {
+          console.log(error);
+        }
+        console.log("about to destroy", election.toJSON());
+        election.destroy();
+        // done();
+      }).end(done);
+    });
+
     // Disable now because the signup process take too long
-    xit('should sign up a user', function(done){
+    it('should sign up a user', function(done){
       request(app)
       .post('/api/v1//users/signup')
       .send(
@@ -156,13 +261,13 @@ describe('Test server, database, and route setup', function(){
           }
         })
       .expect(201)
-      // .expect(function(res){
-      //     //Sign up will redirect to Login, the response is not user's object
-      //     console.log("response body", res.body);
-      //     expect(res.body.first_name).to.equal('Skillful');
-      //     expect(res.body.last_name).to.equal("Cactus");
-      //     expect(res.body.email).to.equal("003@test.com");
-      //   })
+      .expect(function(res){
+          //Sign up will redirect to Login, the response is not user's object
+          console.log("response body", res.body);
+          expect(res.body.first_name).to.equal('Skillful');
+          expect(res.body.last_name).to.equal("Cactus");
+          expect(res.body.email).to.equal("001@test.com");
+        })
       .end(done);
     });
 
@@ -171,14 +276,11 @@ describe('Test server, database, and route setup', function(){
       .post('/api/v1/users/login')
       .send(
         {
-          email: "000@test.com",
+          email: "001@test.com",
           password:"1234"
         }
       )
       .expect(200)
-      // .expect(function(res){
-      //   // console.log("login response", res.body);
-      // })
       .end(done);
     });
 
@@ -199,16 +301,15 @@ describe('Test server, database, and route setup', function(){
     it('should create an elections', function(done){
       request(app)
       .post('/api/v1/elections/create')
-      .send( "election": { "name": "2016 Test", "description":"Test Route"})
+      .send( {election: { name: "2nd_test", description:"Test Route"}})
       .expect(200)
-      // Like user signup, take too long to return
-      // .then(function(elec){
-      //   console.log("return election", elec);
-      //   electionId = elec.id;
-      //   expect(elec.name).to.equal("2016 Test");
-      //   expect(elec.description).to.equal("Test Route");
-      //   done();
-      // })
+      .then(function(elec){
+        console.log("return election", elec);
+        electionId = elec.id;
+        expect(elec.name).to.equal("2nd_test");
+        expect(elec.description).to.equal("Test Route");
+        done();
+      })
       .end(done);
     });
 
@@ -235,92 +336,10 @@ describe('Test server, database, and route setup', function(){
       )
       .expect(200)
       .then(function(elect){
-        // console.log("return election", elect);
         expect(elect.name).to.equal("2017 Test");
         expect(elect.description).to.equal("Updated version");
         done();
       })
     });
-
-    // // Delete test data from tables
-    // after(function(done){
-    //   User.forge({email: "002@test.com"})
-    //   .fetch()
-    //   .then(function(user, error) {
-    //     if (error) {
-    //       console.log(error);
-    //     }
-    //     console.log("about to destroy", user.toJSON());
-    //     user.destroy();
-    //     done();
-    //   });
-    // });
-
-    // Group.forge({name: "Hack_Reactor9"})
-    // .fetch()
-    // .then(function(group, error) {
-    //   if (error) {
-    //     console.log(error);
-    //   }
-    //   console.log("about to destroy", group.toJSON());
-    //   group.destroy();
-    //   // done();
-    // }).end(done);
-
-    // Poll.forge({name: "8th floor"})
-    // .fetch()
-    // .then(function(poll, error) {
-    //   if (error) {
-    //     console.log(error);
-    //   }
-    //   console.log("about to destroy", poll.toJSON());
-    //   poll.destroy();
-    //   // done();
-    // }).end(done);;
-
-    // Question.forge({name: "Funnest guy in Hack Reactor?"})
-    // .fetch()
-    // .then(function(question, error) {
-    //   if (error) {
-    //     console.log(error);
-    //   }
-    //   console.log("about to destroy", question.toJSON());
-    //   question.destroy();
-    //   // done();
-    // }).end(done);;
-
-    // Election.forge({name: "2015_Election"})
-    // .fetch()
-    // .then(function(election, error) {
-    //   if (error) {
-    //     console.log(error);
-    //   }
-    //   console.log("about to destroy", election.toJSON());
-    //   election.destroy();
-    //   // done();
-    // }).end(done);;
-
-    // Ballot.forge({choices: '{
-    //     selections: [
-    //     {
-    //       question_id: 2,
-    //       selection: null
-    //     },
-    //     {
-    //     question_id: 3,
-    //     selection: "Marcus"
-    //     }
-    //   ]
-    //   }'})
-    // .fetch()
-    // .then(function(ballot, error) {
-    //   if (error) {
-    //     console.log(error);
-    //   }
-    //   console.log("about to destroy", ballot.toJSON());
-    //   ballot.destroy();
-    //   done();
-    // });
-
   });
 });
